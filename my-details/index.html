@@ -90,6 +90,15 @@
     <p id="signin-msg" class="small"></p>
   </section>
 
+  <section id="admin-bar" class="card hide">
+    <h2>Admin view</h2>
+    <label for="admin-pick" class="small">See the page as a member (read-only)</label>
+    <div class="actions" style="margin-top:6px;align-items:center">
+      <select id="admin-pick" class="codein" style="font:inherit;letter-spacing:0;width:auto;max-width:100%"></select>
+      <span class="small" id="admin-msg" role="status"></span>
+    </div>
+  </section>
+
   <section id="me" class="hide" aria-live="polite">
     <div class="card">
       <p class="hello" id="hello"></p>
@@ -193,6 +202,7 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         busy(false);
+        if (data.ok && data.admin) return renderAdmin(data);
         if (data.ok) return render(data.details);
         if (data.error === "not_found") setMsg("We couldn't find " + data.email + " on the member list. Try the Google account for the email you gave us, or email " + C.CONTACT_EMAIL + ".");
         else if (data.error === "signin_failed") setMsg("Sign-in didn't go through. Please try again.");
@@ -201,11 +211,36 @@
       .catch(function () { busy(false); setMsg("Couldn't reach the server. Check your connection and try again."); });
   }
 
+  function renderAdmin(data) {
+    $("signin").classList.add("hide");
+    $("admin-bar").classList.remove("hide");
+    var pick = $("admin-pick");
+    if (!pick.options.length) {
+      pick.innerHTML = '<option value="">Choose a member…</option>' + (data.members || []).map(function (n) { return '<option>' + esc(n) + "</option>"; }).join("");
+      pick.addEventListener("change", function () {
+        if (!pick.value) return;
+        $("admin-msg").textContent = "Loading…";
+        fetch(C.SCRIPT_URL, { method: "POST", body: JSON.stringify({ credential: credential, action: "view_as", member: pick.value }) })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (res.ok) { $("admin-msg").textContent = ""; render(res.details); }
+            else $("admin-msg").textContent = res.error === "signin_failed" ? "Sign-in timed out. Reload and sign in again." : "Couldn't load that member.";
+          })
+          .catch(function () { $("admin-msg").textContent = "Couldn't reach the server."; });
+      });
+    }
+    if (data.details) render(data.details);
+  }
+
   function render(d) {
     $("signin").classList.add("hide");
     $("me").classList.remove("hide");
     $("hello").textContent = "Hi, " + d.name.split(/[ (\/]/)[0];
-    $("signed-as").textContent = "Signed in as " + d.email;
+    $("signed-as").textContent = d.viewingAs ? "Viewing as " + d.name + (d.email ? " (" + d.email + ")" : "") + ". Read-only." : "Signed in as " + d.email;
+    $("change-open").classList.toggle("hide", !!d.viewingAs);
+    $("change-form").classList.add("hide");
+    $("change-done").textContent = "";
+    $("door-code").classList.add("hidden"); $("door-toggle").textContent = "Show"; $("door-toggle").setAttribute("aria-pressed", "false");
     var chips = [];
     if (d.studio) chips.push('<span class="chip sun">Studio ' + esc(d.studio) + "</span>");
     if (d.status) chips.push('<span class="chip">' + esc(d.status) + "</span>");
