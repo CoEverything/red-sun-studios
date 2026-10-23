@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Red Sun Studios: My details</title>
+<script>
+  /* ---------------- SETTINGS ----------------
+     GOOGLE_CLIENT_ID: the OAuth client ID from Google Cloud (ends in .apps.googleusercontent.com)
+     SCRIPT_URL: the Apps Script web app URL (ends in /exec)
+     MEMBERS_DOC_URL: the members-only Google Doc (optional)            */
+  window.CONFIG = {
+    GOOGLE_CLIENT_ID: "",
+    SCRIPT_URL: "",
+    MEMBERS_DOC_URL: "",
+    CONTACT_EMAIL: "ellie@coeverything.co"
+  };
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f2ea; --paper: #fffdf9; --ink: #1f1b16; --muted: #6b6258; --line: #e3dace;
+    --sun: #d9482b; --sun-soft: #f7ddd5; --ok: #2f7a4b; --ok-soft: #dcefe2; --warn-soft: #fbe8c8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #171411; --paper: #211d19; --ink: #f2ece3; --muted: #a99f92; --line: #3a332c;
+            --sun: #ef6a4c; --sun-soft: #3b231c; --ok: #6cc08b; --ok-soft: #1d3326; --warn-soft: #3a2e17; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font: 16px/1.55 Inter, ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 28px 16px 64px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .sun { width: 30px; height: 30px; border-radius: 50%; background: var(--sun); flex: none; box-shadow: 0 0 0 6px var(--sun-soft); }
+  h1 { font-family: Fraunces, Georgia, serif; font-size: 30px; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); margin: 6px 0 24px; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  .center { text-align: center; }
+  #signin-btn { display: inline-block; margin: 8px auto 4px; min-height: 44px; }
+  .small { font-size: 14px; color: var(--muted); }
+  .hello { font-family: Fraunces, Georgia, serif; font-size: 24px; margin: 0 0 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
+  .chip.sun { background: var(--sun-soft); border-color: transparent; color: var(--ink); width: auto; height: auto; box-shadow: none; }
+  .big { font-variant-numeric: tabular-nums; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .row .v { font-variant-numeric: tabular-nums; text-align: right; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+  .status { border-radius: 12px; padding: 12px 14px; margin-top: 12px; font-weight: 500; }
+  .status.ok { background: var(--ok-soft); }
+  .status.due { background: var(--sun-soft); }
+  .secret { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .secret code { font: 600 26px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; }
+  .secret code.hidden { filter: blur(7px); user-select: none; }
+  button, .btn { font: inherit; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn.primary { background: var(--sun); color: #fff; border-color: var(--sun); font-weight: 600; }
+  button:focus-visible, .btn:focus-visible, a:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+  a { color: var(--sun); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-weight: 500; color: var(--muted); font-size: 13px; padding: 4px 0; }
+  td { padding: 7px 0; border-top: 1px dashed var(--line); font-variant-numeric: tabular-nums; }
+  td.num, th.num { text-align: right; }
+  .hide { display: none !important; }
+  .codein { font: 600 22px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; width: 9em; padding: 6px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); min-height: 44px; }
+  .codein:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+  #change-form { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  footer { color: var(--muted); font-size: 14px; margin-top: 28px; text-align: center; }
+  .spinner { width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--sun); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 10px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header><span class="sun" aria-hidden="true"></span><h1>My details</h1></header>
+  <p class="lede">Red Sun Studios at 94 Green St. Sign in with the Google account for the email you use with us to see your studio, door code and payments. Only you can see this.</p>
+
+  <section id="signin" class="card center" aria-live="polite">
+    <h2>Sign in</h2>
+    <div id="signin-btn"></div>
+    <div id="loading" class="hide"><div class="spinner" role="status" aria-label="Loading"></div><p class="small">Looking you up…</p></div>
+    <p id="signin-msg" class="small"></p>
+  </section>
+
+  <section id="me" class="hide" aria-live="polite">
+    <div class="card">
+      <p class="hello" id="hello"></p>
+      <p class="small" id="signed-as"></p>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="card" id="door-card">
+      <h2>Getting in</h2>
+      <div class="secret">
+        <div>
+          <div class="small">Your keypad code</div>
+          <code id="door-code" class="hidden" aria-label="Door code, hidden"></code>
+        </div>
+        <button type="button" id="door-toggle" aria-pressed="false">Show</button>
+      </div>
+      <div class="chips" id="doors" aria-label="Doors your code opens"></div>
+      <p class="small">The same code works on every door listed. Press any key to wake the keypad, enter your code, then press #. Your code is just for you, so please don't share it. If it stops working, text Ellie or Miriam.</p>
+      <div class="actions" style="align-items:center"><button type="button" id="change-open">Change my code</button><span class="small" id="change-done" role="status"></span></div>
+      <form id="change-form" class="hide" autocomplete="off">
+        <label for="new-code" class="small" id="new-code-label">New code</label>
+        <div class="actions" style="margin-top:6px">
+          <input id="new-code" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="codein" aria-describedby="change-help change-msg">
+          <button type="submit" class="btn primary" id="change-save">Save new code</button>
+          <button type="button" id="change-cancel">Cancel</button>
+        </div>
+        <p class="small" id="change-help"></p>
+        <p class="small" id="change-msg" role="status"></p>
+      </form>
+    </div>
+
+    <div class="card" id="wifi-card">
+      <h2>Wifi</h2>
+      <div class="row"><span>Network</span><span class="v" id="wifi-net"></span></div>
+      <div class="row"><span>Password</span><span class="v"><code id="wifi-pass"></code> <button type="button" id="wifi-copy">Copy</button></span></div>
+    </div>
+
+    <div class="card">
+      <h2 id="money-title">Rent</h2>
+      <div class="grid2">
+        <div><div class="small">Your monthly share</div><div class="big" id="rent"></div></div>
+        <div><div class="small">Balance owed</div><div class="big" id="balance"></div></div>
+      </div>
+      <div class="status" id="pay-status"></div>
+      <div class="actions">
+        <a class="btn primary" id="pay-btn" href="#" target="_blank" rel="noopener">Pay on Nickel</a>
+        <a class="btn hide" id="agreement-btn" href="#" target="_blank" rel="noopener">My agreement</a>
+      </div>
+    </div>
+
+    <div class="card hide" id="invoices-card">
+      <h2>Open invoices</h2>
+      <table><thead><tr><th>Invoice</th><th>Covers</th><th class="num">Amount</th></tr></thead><tbody id="invoices"></tbody></table>
+      <p class="small">Nickel emails each invoice with its own pay link.</p>
+    </div>
+
+    <div class="card">
+      <h2>Recent payments</h2>
+      <table><thead><tr><th>Received</th><th>For</th><th class="num">Amount</th></tr></thead><tbody id="payments"></tbody></table>
+      <p class="small" id="deposit"></p>
+    </div>
+
+    <div class="actions">
+      <a class="btn hide" id="doc-btn" href="#" target="_blank" rel="noopener">Members' guide</a>
+      <a class="btn" id="mail-btn" href="#">Something look wrong?</a>
+      <button type="button" id="signout">Sign out</button>
+    </div>
+  </section>
+
+  <footer>Red Sun Studios · 94 Green St, Jamaica Plain</footer>
+</main>
+
+<script>
+(function () {
+  var C = window.CONFIG;
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) {
+    if (n === null || n === undefined || isNaN(n)) return "–";
+    var s = Math.abs(n).toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: n % 1 ? 2 : 0 });
+    return n < 0 ? "(" + s + ")" : s;
+  };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+
+  function setMsg(t) { $("signin-msg").textContent = t || ""; }
+  function busy(on) { $("loading").classList.toggle("hide", !on); $("signin-btn").classList.toggle("hide", on); }
+
+  function init() {
+    if (!C.GOOGLE_CLIENT_ID || !C.SCRIPT_URL) { setMsg("This page isn't connected yet. Add the client ID and script URL in the settings at the top of the file."); return; }
+    if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(init, 150); return; }
+    google.accounts.id.initialize({ client_id: C.GOOGLE_CLIENT_ID, callback: onCredential, auto_select: true, itp_support: true });
+    google.accounts.id.renderButton($("signin-btn"), { theme: "outline", size: "large", shape: "pill", text: "signin_with" });
+    google.accounts.id.prompt();
+  }
+
+  var credential = null, codeLength = 6;
+
+  function onCredential(resp) {
+    credential = resp.credential;
+    busy(true); setMsg("");
+    fetch(C.SCRIPT_URL, { method: "POST", body: JSON.stringify({ credential: resp.credential }) })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        busy(false);
+        if (data.ok) return render(data.details);
+        if (data.error === "not_found") setMsg("We couldn't find " + data.email + " on the member list. Try the Google account for the email you gave us, or email " + C.CONTACT_EMAIL + ".");
+        else if (data.error === "signin_failed") setMsg("Sign-in didn't go through. Please try again.");
+        else setMsg("Something went wrong on our end. Please try again in a minute.");
+      })
+      .catch(function () { busy(false); setMsg("Couldn't reach the server. Check your connection and try again."); });
+  }
+
+  function render(d) {
+    $("signin").classList.add("hide");
+    $("me").classList.remove("hide");
+    $("hello").textContent = "Hi, " + d.name.split(/[ (\/]/)[0];
+    $("signed-as").textContent = "Signed in as " + d.email;
+    var chips = [];
+    if (d.studio) chips.push('<span class="chip sun">Studio ' + esc(d.studio) + "</span>");
+    if (d.status) chips.push('<span class="chip">' + esc(d.status) + "</span>");
+    if (d.reportMonth) chips.push('<span class="chip">As of ' + esc(d.reportMonth) + "</span>");
+    $("chips").innerHTML = chips.join("");
+
+    var current = d.doorCode !== undefined;
+    $("door-card").classList.toggle("hide", !current || !d.doorCode);
+    codeLength = d.codeLength || (d.doorCode ? d.doorCode.length : 6);
+    if (d.doorCode) showCode(d.doorCode, d.doors || (d.doorName ? [d.doorName] : []));
+    $("wifi-card").classList.toggle("hide", !current || !d.wifiNetwork);
+    $("wifi-net").textContent = d.wifiNetwork || "";
+    $("wifi-pass").textContent = d.wifiPassword || "";
+
+    $("rent").textContent = money(d.rentThisMonth);
+    $("balance").textContent = money(d.balanceOwed > 0 ? d.balanceOwed : 0);
+    var st = $("pay-status");
+    if (d.balanceOwed > 0) {
+      st.className = "status due";
+      st.textContent = "You have " + money(d.balanceOwed) + " open" + (d.lastPayment ? ". Your last payment we have is from " + d.lastPayment + "." : ".") + " If you'd like to split it up, just email us.";
+    } else if (d.balanceOwed < 0) {
+      st.className = "status ok";
+      st.textContent = "You're ahead by " + money(-d.balanceOwed) + ". Thank you!";
+    } else {
+      st.className = "status ok";
+      st.textContent = "You're all paid up through " + (d.reportMonth || "this month") + ". Thank you!";
+    }
+    $("pay-btn").href = d.nickelUrl;
+    if (d.agreementLink) { $("agreement-btn").href = d.agreementLink; $("agreement-btn").classList.remove("hide"); }
+
+    var inv = d.invoices || [];
+    $("invoices-card").classList.toggle("hide", !inv.length);
+    $("invoices").innerHTML = inv.map(function (i) {
+      return "<tr><td>" + esc(i.invoice) + "</td><td>" + esc(i.covers) + '</td><td class="num">' + money(i.amount) + "</td></tr>";
+    }).join("");
+
+    var p = d.payments || [];
+    $("payments").innerHTML = p.length ? p.map(function (x) {
+      var what = x.type === "Rent" || !x.type ? (x.forMonth || "") : x.type + (x.forMonth ? " (" + x.forMonth + ")" : "");
+      return "<tr><td>" + esc(x.date || "Credit") + "</td><td>" + esc(what) + '</td><td class="num">' + money(x.amount) + "</td></tr>";
+    }).join("") : '<tr><td colspan="3" class="small">No payments yet.</td></tr>';
+    $("deposit").textContent = d.depositHeld ? "Security deposit on file: " + money(d.depositHeld) + "." : "No security deposit on file.";
+
+    if (C.MEMBERS_DOC_URL) { $("doc-btn").href = C.MEMBERS_DOC_URL; $("doc-btn").classList.remove("hide"); }
+    $("mail-btn").href = "mailto:" + C.CONTACT_EMAIL + "?subject=" + encodeURIComponent("My Red Sun Studios details") +
+      "&body=" + encodeURIComponent("Hi Ellie,\n\nSomething looks off on my details page (" + d.name + "):\n\n");
+  }
+
+  function showCode(code, doors) {
+    $("door-code").textContent = code;
+    if (!$("door-code").classList.contains("hidden")) $("door-code").setAttribute("aria-label", "Door code " + code.split("").join(" "));
+    $("doors").innerHTML = doors.length ? '<span class="small" style="width:100%">Opens:</span>' + doors.map(function (n) { return '<span class="chip">' + esc(n) + "</span>"; }).join("") : "";
+    var len = codeLength;
+    $("new-code").maxLength = len;
+    $("new-code-label").textContent = "New code (" + len + " digits)";
+    $("change-help").textContent = "Numbers only, " + len + " digits. Avoid a run like 123456 or one digit repeated. Your new code replaces your old one on every door listed above, usually within a few minutes.";
+  }
+
+  function openChange(open) {
+    $("change-form").classList.toggle("hide", !open);
+    $("change-open").classList.toggle("hide", open);
+    $("change-msg").textContent = "";
+    if (open) $("change-done").textContent = "";
+    $("new-code").value = "";
+    if (open) $("new-code").focus();
+  }
+  $("change-open").addEventListener("click", function () { openChange(true); });
+  $("change-cancel").addEventListener("click", function () { openChange(false); });
+
+  $("change-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var code = $("new-code").value.trim(), msg = $("change-msg"), save = $("change-save");
+    var len = codeLength;
+    if (!/^\d+$/.test(code) || code.length !== len) { msg.textContent = "Enter " + len + " digits."; return; }
+    save.disabled = true; msg.textContent = "Saving…";
+    fetch(C.SCRIPT_URL, { method: "POST", body: JSON.stringify({ credential: credential, action: "change_code", code: code }) })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        save.disabled = false;
+        if (data.ok) {
+          showCode(data.doorCode, data.doors || []);
+          openChange(false);
+          $("door-code").classList.remove("hidden"); $("door-toggle").textContent = "Hide"; $("door-toggle").setAttribute("aria-pressed", "true");
+          $("door-code").setAttribute("aria-label", "Door code " + data.doorCode.split("").join(" "));
+          $("change-done").textContent = "Saved. Give it a few minutes before trying it at the door.";
+          return;
+        }
+        var e2 = data.error;
+        msg.textContent =
+          e2 === "bad_code" ? data.why :
+          e2 === "code_taken" ? "That code can't be used. Please pick a different one." :
+          e2 === "too_many" ? "Too many tries for now. Please wait an hour, or text Ellie." :
+          e2 === "signin_failed" ? "Your sign-in timed out. Reload the page, sign in again, and try once more." :
+          e2 === "not_current" ? "Codes can only be changed while you have a studio here." :
+          e2 === "no_code" ? "You don't have a personal code yet. Text Ellie and we'll set one up." :
+          "Something went wrong on our end. Your old code still works. Please try again later.";
+      })
+      .catch(function () { save.disabled = false; msg.textContent = "Couldn't reach the server. Your old code still works."; });
+  });
+
+  $("door-toggle").addEventListener("click", function () {
+    var c = $("door-code"), hidden = c.classList.toggle("hidden");
+    this.textContent = hidden ? "Show" : "Hide";
+    this.setAttribute("aria-pressed", String(!hidden));
+    c.setAttribute("aria-label", hidden ? "Door code, hidden" : "Door code " + c.textContent.split("").join(" "));
+  });
+  $("wifi-copy").addEventListener("click", function () {
+    var b = this;
+    navigator.clipboard && navigator.clipboard.writeText($("wifi-pass").textContent).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); });
+  });
+  $("signout").addEventListener("click", function () {
+    if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+    location.reload();
+  });
+
+  window.__render = render; // used by the preview test only
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+</body>
+</html>
