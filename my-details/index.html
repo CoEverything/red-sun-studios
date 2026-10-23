@@ -97,6 +97,11 @@
       <select id="admin-pick" class="codein" style="font:inherit;letter-spacing:0;width:auto;max-width:100%"></select>
       <span class="small" id="admin-msg" role="status"></span>
     </div>
+    <details id="admin-sources" class="hide" style="margin-top:14px">
+      <summary class="small" style="cursor:pointer">Where this page gets its information</summary>
+      <p class="small" style="margin:10px 0 6px">Everything comes from <a id="admin-sheet" target="_blank" rel="noopener"></a>. Edit the sheet and the page updates the next time someone signs in.</p>
+      <ul id="admin-source-list" class="small" style="margin:0;padding-left:18px"></ul>
+    </details>
   </section>
 
   <section id="me" class="hide" aria-live="polite">
@@ -214,6 +219,15 @@
   function renderAdmin(data) {
     $("signin").classList.add("hide");
     $("admin-bar").classList.remove("hide");
+    if (data.sheetUrl && !$("admin-sheet").href) {
+      $("admin-sheet").href = data.sheetUrl;
+      $("admin-sheet").textContent = data.sheetName || "the studio spreadsheet";
+      $("admin-source-list").innerHTML = (data.sources || []).map(function (x) {
+        var tab = x.url ? ' <a href="' + esc(x.url) + '" target="_blank" rel="noopener">Open ' + esc(x.tab) + "</a>" : "";
+        return '<li style="margin-bottom:6px"><strong>' + esc(x.part) + ":</strong> " + esc(x.from) + tab + "</li>";
+      }).join("");
+      $("admin-sources").classList.remove("hide");
+    }
     var pick = $("admin-pick");
     if (!pick.options.length) {
       pick.innerHTML = '<option value="">Choose a member…</option>' + (data.members || []).map(function (n) { return '<option>' + esc(n) + "</option>"; }).join("");
