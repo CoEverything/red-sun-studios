@@ -92,7 +92,7 @@
 
   <section id="admin-bar" class="card hide">
     <h2>Admin view</h2>
-    <label for="admin-pick" class="small">See the page as a member (read-only)</label>
+    <label for="admin-pick" class="small">See the page as a member</label>
     <div class="actions" style="margin-top:6px;align-items:center">
       <select id="admin-pick" class="codein" style="font:inherit;letter-spacing:0;width:auto;max-width:100%"></select>
       <span class="small" id="admin-msg" role="status"></span>
@@ -136,7 +136,7 @@
       <div class="row"><span>Password</span><span class="v"><code id="wifi-pass"></code> <button type="button" id="wifi-copy">Copy</button></span></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="rent-card">
       <h2 id="money-title">Rent</h2>
       <div class="grid2">
         <div><div class="small">Your monthly share</div><div class="big" id="rent"></div></div>
@@ -155,7 +155,7 @@
       <p class="small">Nickel emails each invoice with its own pay link.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="payments-card">
       <h2>Recent payments</h2>
       <table><thead><tr><th>Received</th><th>For</th><th class="num">Amount</th></tr></thead><tbody id="payments"></tbody></table>
       <p class="small" id="deposit"></p>
@@ -193,7 +193,7 @@
     google.accounts.id.prompt();
   }
 
-  var credential = null, codeLength = 6;
+  var credential = null, codeLength = 6, viewing = null;
 
   function onCredential(resp) {
     credential = resp.credential;
@@ -235,9 +235,14 @@
   function render(d) {
     $("signin").classList.add("hide");
     $("me").classList.remove("hide");
-    $("hello").textContent = "Hi, " + d.name.split(/[ (\/]/)[0];
-    $("signed-as").textContent = d.viewingAs ? "Viewing as " + d.name + (d.email ? " (" + d.email + ")" : "") + ". Read-only." : "Signed in as " + d.email;
-    $("change-open").classList.toggle("hide", !!d.viewingAs);
+    viewing = d.viewingAs ? d.name : (d.adminSelf ? "__self__" : null);
+    $("hello").textContent = d.adminSelf ? "Hi, admin" : "Hi, " + d.name.split(/[ (\/]/)[0];
+    $("signed-as").textContent = d.viewingAs ? "Viewing as " + d.name + (d.email ? " (" + d.email + ")" : "") + ". You can change their code below." :
+      d.adminSelf ? "Signed in as " + d.email + ". This is your own code. Pick a member above to see theirs." : "Signed in as " + d.email;
+    $("change-open").classList.remove("hide");
+    $("change-open").textContent = d.viewingAs ? "Change this member's code" : "Change my code";
+    $("rent-card").classList.toggle("hide", !!d.adminSelf);
+    $("payments-card").classList.toggle("hide", !!d.adminSelf);
     $("change-form").classList.add("hide");
     $("change-done").textContent = "";
     $("door-code").classList.add("hidden"); $("door-toggle").textContent = "Show"; $("door-toggle").setAttribute("aria-pressed", "false");
@@ -296,7 +301,9 @@
     var len = codeLength;
     $("new-code").maxLength = len;
     $("new-code-label").textContent = "New code (" + len + " digits)";
-    $("change-help").textContent = "Numbers only, " + len + " digits. Avoid a run like 123456 or one digit repeated. Your new code replaces your old one on every door listed above, usually within a few minutes.";
+    $("change-help").textContent = "Numbers only, " + len + " digits. Avoid a run like 123456 or one digit repeated. " +
+      (viewing && viewing !== "__self__" ? "This replaces their current code on every door listed above right away, so let them know the new one." :
+       "Your new code replaces your old one on every door listed above, usually within a few minutes.");
   }
 
   function openChange(open) {
@@ -316,7 +323,7 @@
     var len = codeLength;
     if (!/^\d+$/.test(code) || code.length !== len) { msg.textContent = "Enter " + len + " digits."; return; }
     save.disabled = true; msg.textContent = "Saving…";
-    fetch(C.SCRIPT_URL, { method: "POST", body: JSON.stringify({ credential: credential, action: "change_code", code: code }) })
+    fetch(C.SCRIPT_URL, { method: "POST", body: JSON.stringify({ credential: credential, action: "change_code", code: code, member: viewing }) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         save.disabled = false;
@@ -335,7 +342,8 @@
           e2 === "too_many" ? "Too many tries for now. Please wait an hour, or text Ellie." :
           e2 === "signin_failed" ? "Your sign-in timed out. Reload the page, sign in again, and try once more." :
           e2 === "not_current" ? "Codes can only be changed while you have a studio here." :
-          e2 === "no_code" ? "You don't have a personal code yet. Text Ellie and we'll set one up." :
+          e2 === "no_code" ? (viewing && viewing !== "__self__" ? "This member doesn't have a personal code yet. Run Apply door code changes first." : "You don't have a personal code yet. Text Ellie and we'll set one up.") :
+          e2 === "not_saved" ? "RemoteLock didn't confirm the change, so the old code still works. Please try again or text Ellie." :
           "Something went wrong on our end. Your old code still works. Please try again later.";
       })
       .catch(function () { save.disabled = false; msg.textContent = "Couldn't reach the server. Your old code still works."; });
